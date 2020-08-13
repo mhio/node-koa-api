@@ -944,10 +944,33 @@
   dependencies:
     defer-to-connect "^1.0.1"
 
+"@types/chai@4":
+  version "4.2.12"
+  resolved "https://registry.npmjs.org/@types/chai/-/chai-4.2.12.tgz#6160ae454cd89dae05adc3bb97997f488b608201"
+  integrity sha512-aN5IAC8QNtSUdQzxu7lGBgYAOuU1tmRU4c9dIq5OKGf/SBVjXo+ffM2wEjudAWbgpOhy60nLoAGH1xm8fpCKFQ==
+
 "@types/color-name@^1.1.1":
   version "1.1.1"
   resolved "https://registry.npmjs.org/@types/color-name/-/color-name-1.1.1.tgz#1c1261bbeaa10a8055bbc5d8ab84b7b2afc846a0"
   integrity sha512-rr+OQyAjxze7GgWrSaJwydHStIhHq2lvY3BOC2Mj7KnzI7XK0Uw1TOOdI9lDoajEbSWLiYgoo4f1R51erQfhPQ==
+
+"@types/cookiejar@*":
+  version "2.1.1"
+  resolved "https://registry.npmjs.org/@types/cookiejar/-/cookiejar-2.1.1.tgz#90b68446364baf9efd8e8349bb36bd3852b75b80"
+  integrity sha512-aRnpPa7ysx3aNW60hTiCtLHlQaIFsXFCgQlpakNgDNVFzbtusSY8PwjAQgRWfSk0ekNoBjO51eQRB6upA9uuyw==
+
+"@types/node@*":
+  version "14.0.27"
+  resolved "https://registry.npmjs.org/@types/node/-/node-14.0.27.tgz#a151873af5a5e851b51b3b065c9e63390a9e0eb1"
+  integrity sha512-kVrqXhbclHNHGu9ztnAwSncIgJv/FaxmzXJvGXNdcCpV1b8u1/Mi6z6m0vwy0LzKeXFTPLH0NzwmoJ3fNCIq0g==
+
+"@types/superagent@^3.8.3":
+  version "3.8.7"
+  resolved "https://registry.npmjs.org/@types/superagent/-/superagent-3.8.7.tgz#1f1ed44634d5459b3a672eb7235a8e7cfd97704c"
+  integrity sha512-9KhCkyXv268A2nZ1Wvu7rQWM+BmdYUVkycFeNnYrUL5Zwu7o8wPQ3wBfW59dDP+wuoxw0ww8YKgTNv8j/cgscA==
+  dependencies:
+    "@types/cookiejar" "*"
+    "@types/node" "*"
 
 abbrev@1:
   version "1.1.1"
@@ -1163,6 +1186,13 @@ atob@^2.1.2:
   resolved "https://registry.npmjs.org/atob/-/atob-2.1.2.tgz#6d9517eb9e030d2436666651e86bd9f6f13533c9"
   integrity sha512-Wm6ukoaOGJi/73p/cl2GvLjTI5JM1k/O14isD73YML8StrH/7/lRFgmg8nICZgD3bZZvjwCGxtMOD3wWNAu8cg==
 
+axios@^0.19.2:
+  version "0.19.2"
+  resolved "https://registry.npmjs.org/axios/-/axios-0.19.2.tgz#3ea36c5d8818d0d5f8a8a97a6d36b86cdc00cb27"
+  integrity sha512-fjgm5MvRHLhx+osE2xoekY70AhARk3a6hkN+3Io1jc00jtquGvxYlKlsFUhmUET0V5te6CcZI7lcv2Ym61mjHA==
+  dependencies:
+    follow-redirects "1.5.10"
+
 babel-eslint@^10.0.1:
   version "10.1.0"
   resolved "https://registry.npmjs.org/babel-eslint/-/babel-eslint-10.1.0.tgz#6968e568a910b78fb3779cdd8b6ac2f479943232"
@@ -1373,6 +1403,19 @@ catharsis@^0.8.11:
   integrity sha512-a+xUyMV7hD1BrDQA/3iPV7oc+6W26BgVJO05PGEoatMyIuPScQKsde6i3YorWX1qs+AZjnJ18NqdKoCtKiNh1g==
   dependencies:
     lodash "^4.17.14"
+
+chai-http@^4.3.0:
+  version "4.3.0"
+  resolved "https://registry.npmjs.org/chai-http/-/chai-http-4.3.0.tgz#3c37c675c1f4fe685185a307e345de7599337c1a"
+  integrity sha512-zFTxlN7HLMv+7+SPXZdkd5wUlK+KxH6Q7bIEMiEx0FK3zuuMqL7cwICAQ0V1+yYRozBburYuxN1qZstgHpFZQg==
+  dependencies:
+    "@types/chai" "4"
+    "@types/superagent" "^3.8.3"
+    cookiejar "^2.1.1"
+    is-ip "^2.0.0"
+    methods "^1.1.2"
+    qs "^6.5.1"
+    superagent "^3.7.0"
 
 chai-subset@^1.6.0:
   version "1.6.0"
@@ -1676,7 +1719,7 @@ convert-source-map@^1.1.0, convert-source-map@^1.7.0:
   dependencies:
     safe-buffer "~5.1.1"
 
-cookiejar@^2.1.0:
+cookiejar@^2.1.0, cookiejar@^2.1.1:
   version "2.1.2"
   resolved "https://registry.npmjs.org/cookiejar/-/cookiejar-2.1.2.tgz#dd8a235530752f988f9a0844f3fc589e3111125c"
   integrity sha512-Mw+adcfzPxcPeI+0WlvRrr/3lGVO0bD75SxX6811cxSh1Wbxx7xZBGK1eVtDf6si8rg2lhnUjsVLMFMfbRIuwA==
@@ -1733,6 +1776,13 @@ debug@3.2.6, debug@^3.1.0, debug@^3.2.6:
   dependencies:
     ms "^2.1.1"
 
+debug@=3.1.0, debug@~3.1.0:
+  version "3.1.0"
+  resolved "https://registry.npmjs.org/debug/-/debug-3.1.0.tgz#5bb5a0672628b64149566ba16819e61518c67261"
+  integrity sha512-OX8XqP7/1a9cqkxYw2yXss15f26NKWBpDXQd0/uK/KPqdQhxbPa994hnzjcE2VqQpDslf55723cKPUOGSmMY3g==
+  dependencies:
+    ms "2.0.0"
+
 debug@^2.2.0, debug@^2.3.3:
   version "2.6.9"
   resolved "https://registry.npmjs.org/debug/-/debug-2.6.9.tgz#5d128515df134ff327e90a4c93f4e077a536341f"
@@ -1746,13 +1796,6 @@ debug@^4.0.1, debug@^4.1.0, debug@^4.1.1:
   integrity sha512-pYAIzeRo8J6KPEaJ0VWOh5Pzkbw/RetuzehGM7QRRX5he4fPHx2rdKMB256ehJCkX+XRQm16eZLqLNS8RSZXZw==
   dependencies:
     ms "^2.1.1"
-
-debug@~3.1.0:
-  version "3.1.0"
-  resolved "https://registry.npmjs.org/debug/-/debug-3.1.0.tgz#5bb5a0672628b64149566ba16819e61518c67261"
-  integrity sha512-OX8XqP7/1a9cqkxYw2yXss15f26NKWBpDXQd0/uK/KPqdQhxbPa994hnzjcE2VqQpDslf55723cKPUOGSmMY3g==
-  dependencies:
-    ms "2.0.0"
 
 decamelize@^1.2.0:
   version "1.2.0"
@@ -2284,6 +2327,13 @@ flatted@^2.0.0, flatted@^2.0.2:
   resolved "https://registry.npmjs.org/flatted/-/flatted-2.0.2.tgz#4575b21e2bcee7434aa9be662f4b7b5f9c2b5138"
   integrity sha512-r5wGx7YeOwNWNlCA0wQ86zKyDLMQr+/RB8xy74M4hTphfmjlijTSSXGuH8rnvKZnfT9i+75zmd8jcKdMR4O6jA==
 
+follow-redirects@1.5.10:
+  version "1.5.10"
+  resolved "https://registry.npmjs.org/follow-redirects/-/follow-redirects-1.5.10.tgz#7b7a9f9aea2fdff36786a94ff643ed07f4ff5e2a"
+  integrity sha512-0V5l4Cizzvqt5D44aTXbFZz+FtyXV1vrDN6qrelxtfYQKW0KO0W2T/hkE8xvGa/540LkZlkaUjO4ailYTFtHVQ==
+  dependencies:
+    debug "=3.1.0"
+
 for-in@^1.0.2:
   version "1.0.2"
   resolved "https://registry.npmjs.org/for-in/-/for-in-1.0.2.tgz#81068d295a8142ec0ac726c6e2200c30fb6d5e80"
@@ -2671,6 +2721,11 @@ invariant@^2.2.2, invariant@^2.2.4:
   dependencies:
     loose-envify "^1.0.0"
 
+ip-regex@^2.0.0:
+  version "2.1.0"
+  resolved "https://registry.npmjs.org/ip-regex/-/ip-regex-2.1.0.tgz#fa78bf5d2e6913c911ce9f819ee5146bb6d844e9"
+  integrity sha1-+ni/XS5pE8kRzp+BnuUUa7bYROk=
+
 is-accessor-descriptor@^0.1.6:
   version "0.1.6"
   resolved "https://registry.npmjs.org/is-accessor-descriptor/-/is-accessor-descriptor-0.1.6.tgz#a9e12cb3ae8d876727eeef3843f8a0897b5c98d6"
@@ -2816,6 +2871,13 @@ is-installed-globally@^0.3.1:
   dependencies:
     global-dirs "^2.0.1"
     is-path-inside "^3.0.1"
+
+is-ip@^2.0.0:
+  version "2.0.0"
+  resolved "https://registry.npmjs.org/is-ip/-/is-ip-2.0.0.tgz#68eea07e8a0a0a94c2d080dd674c731ab2a461ab"
+  integrity sha1-aO6gfooKCpTC0IDdZ0xzGrKkYas=
+  dependencies:
+    ip-regex "^2.0.0"
 
 is-map@^2.0.1:
   version "2.0.1"
@@ -4535,7 +4597,7 @@ strip-json-comments@~2.0.1:
   resolved "https://registry.npmjs.org/strip-json-comments/-/strip-json-comments-2.0.1.tgz#3c531942e908c2697c0ec344858c286c7ca0a60a"
   integrity sha1-PFMZQukIwml8DsNEhYwobHygpgo=
 
-superagent@^3.8.3:
+superagent@^3.7.0:
   version "3.8.3"
   resolved "https://registry.npmjs.org/superagent/-/superagent-3.8.3.tgz#460ea0dbdb7d5b11bc4f78deba565f86a178e128"
   integrity sha512-GLQtLMCoEIK4eDv6OGtkOoSMt3D+oq0y3dsxMuYuDvaNUvuT8eFBuLmfR0iYYzHC1e8hpzC6ZsxbuP6DIalMFA==
@@ -4550,14 +4612,6 @@ superagent@^3.8.3:
     mime "^1.4.1"
     qs "^6.5.1"
     readable-stream "^2.3.5"
-
-supertest@^4.0.2:
-  version "4.0.2"
-  resolved "https://registry.npmjs.org/supertest/-/supertest-4.0.2.tgz#c2234dbdd6dc79b6f15b99c8d6577b90e4ce3f36"
-  integrity sha512-1BAbvrOZsGA3YTCWqbmh14L0YEq0EGICX/nBnfkfVJn7SrxQV1I3pMYjSzG9y/7ZU2V9dWqyqk2POwxlb09duQ==
-  dependencies:
-    methods "^1.1.2"
-    superagent "^3.8.3"
 
 supports-color@7.1.0, supports-color@^7.1.0:
   version "7.1.0"

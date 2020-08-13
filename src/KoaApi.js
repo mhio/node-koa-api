@@ -72,19 +72,21 @@ class KoaApi {
     }
     if (!method) throw new KoaApiException('Setup route requires a route method')
     if (!fn && (!handler_object || !handler_function)) {
-      throw new KoaApiException('Setup route requires routes, handler_ or fn')
+      throw new KoaApiException('Setup route requires a route `handler_*` or `fn`')
     }
     if (fn && (handler_object || handler_function)) {
-      throw new KoaApiException('User either fn or handler_')
+      throw new KoaApiException('Setup route requires either `fn` or `handler_*`')
     }
     if (fn && typeof fn !== 'function') {
-      throw new KoaApiException('Setup route fn to be a function')
+      throw new KoaApiException('Setup route requires `fn` to be a function')
     }
     if (!fn && !handler_object[handler_function]) {
-      throw new KoaApiException(`Setup route handler ${handler_object}[${handler_function}] should exist`)
+      const name = (handler_object.name) ? handler_object.name : 'object'
+      throw new KoaApiException(`Setup route handler \`${name}[${handler_function}]\` should exist`)
     }
     if (!fn && !handler_object[handler_function].bind) {
-      throw new KoaApiException(`Setup route handler "${handler_object.name}.${handler_function}" should be a function`)
+      const name = (handler_object.name) ? handler_object.name : 'object'
+      throw new KoaApiException(`Setup route handler \`${name}[${handler_function}]\` should be a function`)
     }
     const handleFn = (fn)
       ? KoaApiHandle.response(fn)
@@ -131,6 +133,7 @@ class KoaApi {
       debug: console.debug
     }
   }
+
   constructor(opts = {}){
     const routes = opts.routes
     const logger = opts.logger || this.constructor.pinoLikeConsoleLogger()
@@ -160,7 +163,8 @@ class KoaApi {
    */
   listen2(address){
     return new Promise(ok => {
-      this.srv2 = http2.createServer(this.app.callback())
+      // this.srv2 = http2.createServer({}, this.app.callback())
+      this.srv2 = http2.createSecureServer({}, this.app.callback())
       this.srv2.listen(address, ()=> ok(this.srv2))
     })
   }

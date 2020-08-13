@@ -30,6 +30,30 @@ describe('test::unit::KoaApi', function(){
     expect(fn).to.throw('Setup route requires')
   })
 
+  it('should fail to setupRoute with no handler args', function(){
+    const fn = () => KoaApi.setupRoute({}, { path: '/test', method: 'get' })
+    expect(fn).to.throw('Setup route requires a route `handler_*` or `fn`')
+  })
+
+  it('should fail to setupRoute with redundant args', function(){
+    const fn = () => KoaApi.setupRoute({}, { path: '/test', method: 'get', fn: true, handler_object: true })
+    expect(fn).to.throw('Setup route requires either `fn` or `handler_*`')
+  })
+
+  it('should fail to setupRoute with redundant args', function(){
+    const fn = () => KoaApi.setupRoute({}, { path: '/test', method: 'get', fn: true })
+    expect(fn).to.throw('Setup route requires `fn` to be a function')
+  })
+  it('should fail to setupRoute without handler function', function(){
+    const handler = {}
+    const fn = () => KoaApi.setupRoute({}, { path: '/test', method: 'get', handler_object: handler, handler_function: 'nope' })
+    expect(fn).to.throw('Setup route handler `object[nope]` should exist')
+  })
+  it('should fail to setupRoute with handler function that\'s not a function', function(){
+    const handler = { nope: true }
+    const fn = () => KoaApi.setupRoute({}, { path: '/test', method: 'get', handler_object: handler, handler_function: 'nope' })
+    expect(fn).to.throw('Setup route handler `object[nope]` should be a function')
+  })
   it('should setup a single route', function(){
     const router = { 
       get(path){ this.ok = true, this.path = path }

@@ -1,25 +1,22 @@
 /* global expect */
-const supertest = require('supertest')
-const http = require('http')
 const Koa = require('koa')
 
+
 const { KoaApi } = require('../../src/KoaApi')
-const {testPinoLogger} = require('../helpers.web')
+const { Taxios, testPinoLogger} = require('../helpers.web')
 
 describe('test::int::KoaApi', function(){
 
   let app = null
-  let server = null
   let request
 
-  beforeEach(function(done){
+  beforeEach(async function(){
     app = new Koa()
-    server = http.createServer(app.callback()).listen(done)
-    request = supertest(server)
+    request = await Taxios.app(app).listen()
   })
 
   afterEach(function(done){
-    server.close(done)
+    request.srv.close(done)
   })
 
   it('should generate a koa response', async function(){
@@ -30,7 +27,7 @@ describe('test::int::KoaApi', function(){
     app.use(router.routes()).use(router.allowedMethods())
     let res = await request.get('/ok')
     expect( res.status ).to.equal(200)
-    expect( res.body ).to.have.property('data').and.equal('ok')
+    expect( res.data ).to.have.property('data').and.equal('ok')
   })
 
   it('should generate a koa response', async function(){
@@ -40,7 +37,7 @@ describe('test::int::KoaApi', function(){
     KoaApi.setupRoutes(oroutes, { app })
     let res = await request.get('/ok')
     expect( res.status ).to.equal(200)
-    expect( res.body ).to.have.property('data').and.equal('ok')
+    expect( res.data ).to.have.property('data').and.equal('ok')
   })
 
   it('should generate a koa response', async function(){
@@ -54,7 +51,7 @@ describe('test::int::KoaApi', function(){
     KoaApi.setupRoutes(oroutes, { app })
     let res = await request.get('/ok')
     expect( res.status ).to.equal(200)
-    expect( res.body ).to.have.property('data').and.equal('okeydokey')
+    expect( res.data ).to.have.property('data').and.equal('okeydokey')
   })
 
   it('should generate a koa response for a sub router', async function(){
@@ -67,23 +64,19 @@ describe('test::int::KoaApi', function(){
     KoaApi.setupRoutes(oroutes, { app })
     let res = await request.get('/sub/ok')
     expect( res.status ).to.equal(200)
-    expect( res.body ).to.have.property('data').and.equal('ok2')
+    expect( res.data ).to.have.property('data').and.equal('ok2')
     let resok = await request.get('/ok')
     expect( resok.status ).to.equal(200)
-    expect( resok.body ).to.have.property('data').and.equal('ok1')
+    expect( resok.data ).to.have.property('data').and.equal('ok1')
   })
 
-  it('should create a KoaApi', function(){
-    expect( new KoaApi() ).to.be.ok
-  })
-
-  it('should create a KoaApi', function(){
+  it('should create a KoaApi with no config', function(){
     const api = new KoaApi()
     expect( api.app ).to.be.ok
     expect( api.router ).to.be.ok
   })
 
-  it('should create a KoaApi', async function(){
+  it('should create a KoaApi with object config and respond', async function(){
     const routes = [
       { path: '/ok', method: 'get', fn: ()=> Promise.resolve('ok') }
     ]
@@ -91,9 +84,68 @@ describe('test::int::KoaApi', function(){
     new KoaApi({ routes, app, logger, })
     let res = await request.get('/ok')
     expect( res.status ).to.equal(200)
-    expect( res.body ).to.have.property('data').and.equal('ok')
+    expect( res.data ).to.have.property('data').and.equal('ok')
     expect(logger.logs).to.have.lengthOf(1)
     expect(logger.logs[0]).to.containSubset(['info'])
   })
 
+  it('should create a KoaApi with multi object config and respond', async function(){
+    const routes = [
+      { path: '/ok', method: 'get', fn: ()=> Promise.resolve('ok') },
+      [ 'get', '/ok2', ()=> Promise.resolve('ok') ],
+    ]
+    const logger = testPinoLogger()
+    new KoaApi({ routes, app, logger, })
+    let res = await request.get('/ok')
+    expect( res.status ).to.equal(200)
+    expect( res.data ).to.have.property('data').and.equal('ok')
+    expect(logger.logs).to.have.lengthOf(1)
+    expect(logger.logs[0]).to.containSubset(['info'])
+    let res2 = await request.get('/ok2')
+    expect( res2.status ).to.equal(200)
+    expect( res2.data ).to.have.property('data').and.equal('ok')
+  })
+
+  it('should create a KoaApi with sub router config and respond', async function(){
+    const routes = [
+      { path: '/ok', method: 'get', fn: ()=> Promise.resolve('ok') },
+      { path: '/sub', routes: [
+        [ 'get', '/ok2', ()=> Promise.resolve('ok2') ],
+      ]},
+      [ 'get', '/ok3', ()=> Promise.resolve('ok3') ],
+    ]
+    const logger = testPinoLogger()
+    new KoaApi({ routes, app, logger, })
+    let res = await request.get('/ok')
+    expect( res.status ).to.equal(200)
+    expect( res.data ).to.have.property('data').and.equal('ok')
+    expect(logger.logs).to.have.lengthOf(1)
+    expect(logger.logs[0]).to.containSubset(['info'])
+    let res2 = await request.get('/sub/ok2')
+    expect( res2.status ).to.equal(200)
+    expect( res2.data ).to.have.property('data').and.equal('ok2')
+    let res3 = await request.get('/ok3')
+    expect( res3.status ).to.equal(200)
+    expect( res3.data ).to.have.property('data').and.equal('ok3')
+  })
+
+  it('should listen on http', async function(){
+    const logger = testPinoLogger()
+    const api = new KoaApi({ routes: [[ 'get', '/ok', async ()=>'ok' ]], logger })
+    const srv = await api.listen()
+    request = Taxios.srv(srv)
+    let res = await request.get('/ok')
+    expect(logger.logs_errors).to.eql([])
+    expect( res.data ).to.have.property('data').and.equal('ok')
+  })
+
+  xit('should listen on http2', async function(){
+    const logger = testPinoLogger()
+    const api = new KoaApi({ routes: [[ 'get', '/ok', async()=>'ok' ]], app, logger, })
+    const srv2 = await api.listen2()
+    request = Taxios.srv2(srv2)
+    let res = await request.get('/ok')
+    expect(logger.logs_errors).to.eql([])
+    expect( res.data ).to.have.property('data').and.equal('ok')
+  })
 })
