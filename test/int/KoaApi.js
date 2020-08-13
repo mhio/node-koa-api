@@ -3,20 +3,22 @@ const Koa = require('koa')
 
 
 const { KoaApi } = require('../../src/KoaApi')
-const { Taxios, testPinoLogger} = require('../helpers.web')
+const { Taxios, TestPinoLogger} = require('../helpers.web')
 
 describe('test::int::KoaApi', function(){
 
   let app = null
   let request
+  const logger = new TestPinoLogger()
 
   beforeEach(async function(){
     app = new Koa()
     request = await Taxios.app(app).listen()
   })
 
-  afterEach(function(done){
-    request.srv.close(done)
+  afterEach(async function(){
+    await request.close()
+    logger.clearLogs()
   })
 
   it('should generate a koa response', async function(){
@@ -80,7 +82,6 @@ describe('test::int::KoaApi', function(){
     const routes = [
       { path: '/ok', method: 'get', fn: ()=> Promise.resolve('ok') }
     ]
-    const logger = testPinoLogger()
     new KoaApi({ routes, app, logger, })
     let res = await request.get('/ok')
     expect( res.status ).to.equal(200)
@@ -94,7 +95,6 @@ describe('test::int::KoaApi', function(){
       { path: '/ok', method: 'get', fn: ()=> Promise.resolve('ok') },
       [ 'get', '/ok2', ()=> Promise.resolve('ok') ],
     ]
-    const logger = testPinoLogger()
     new KoaApi({ routes, app, logger, })
     let res = await request.get('/ok')
     expect( res.status ).to.equal(200)
@@ -114,7 +114,6 @@ describe('test::int::KoaApi', function(){
       ]},
       [ 'get', '/ok3', ()=> Promise.resolve('ok3') ],
     ]
-    const logger = testPinoLogger()
     new KoaApi({ routes, app, logger, })
     let res = await request.get('/ok')
     expect( res.status ).to.equal(200)
@@ -129,24 +128,32 @@ describe('test::int::KoaApi', function(){
     expect( res3.data ).to.have.property('data').and.equal('ok3')
   })
 
-  it('should listen on http', async function(){
-    const logger = testPinoLogger()
-    const api = new KoaApi({ routes: [[ 'get', '/ok', async ()=>'ok' ]], logger })
-    const srv = await api.listen()
-    request = Taxios.srv(srv)
-    let res = await request.get('/ok')
-    expect(logger.logs_errors).to.eql([])
-    expect( res.data ).to.have.property('data').and.equal('ok')
+  describe('listens', function(){
+
+    let lrequest
+
+    afterEach('close', async function(){
+      await lrequest.close()
+    })
+
+    it('should listen on http', async function(){
+      const api = new KoaApi({ routes: [[ 'get', '/ok', async ()=>'ok' ]], logger })
+      const srv = await api.listen()
+      lrequest = Taxios.srv(srv)
+      let res = await lrequest.get('/ok')
+      expect(logger.logs_errors).to.eql([])
+      expect( res.data ).to.have.property('data').and.equal('ok')
+    })
+
+    xit('should listen on http2', async function(){
+      const api = new KoaApi({ routes: [[ 'get', '/ok', async()=>'ok' ]], app, logger, })
+      const srv2 = await api.listen2()
+      lrequest = Taxios.srv2(srv2)
+      let res = await lrequest.get('/ok')
+      expect(logger.logs_errors).to.eql([])
+      expect( res.data ).to.have.property('data').and.equal('ok')
+    })
+
   })
 
-  xit('should listen on http2', async function(){
-    const logger = testPinoLogger()
-    const api = new KoaApi({ routes: [[ 'get', '/ok', async()=>'ok' ]], app, logger, })
-    const srv2 = await api.listen2()
-    request = Taxios.srv2(srv2)
-    let res = await request.get('/ok')
-    expect(logger.logs_errors).to.eql([])
-    expect( res.data ).to.have.property('data').and.equal('ok')
-  })
-  
 })

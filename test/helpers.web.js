@@ -84,38 +84,43 @@ export class Taxios {
     return this
   }
 
-  async get(path){
+  close(){
+    return new Promise(ok => this.srv.close(ok))
+  }
+
+  async post(path, data, options){
+    const app_url = `${this.url}${path}`
+    return axios({ method: 'post', url: app_url, data, options })
+  }
+
+  async get(path, options){
     const app_url = `${this.url}${path}`
     debug('get', app_url)
-    return axios.get(app_url)
+    return axios.get(app_url, options)
   }
+
 }
 
 Taxios._initialiseClass()
 
-export function testPinoLogger(){
-  let logs = []
-  let logs_errors = []
-
-  return {
-    fatal: (...args) => {
-      logs.push(['fatal', ...args])
-      logs_errors.push(['fatal', ...args])
-    },
-    error: (...args) => {
-      logs.push(['error', ...args])
-      logs_errors.push(['error', ...args])
-    },
-    warn: (...args) => logs.push(['warn', ...args]),
-    info: (...args) => logs.push(['info', ...args]),
-    debug: (...args) => logs.push(['debug', ...args]),
-    
-    // test access to logs
-    logs,
-    logs_errors,
-    clearLogs(){
-      logs = []
-      logs_errors = []
-    },
+export class TestPinoLogger {
+  constructor(){
+    this.logs = []
+    this.logs_errors = []
+  }
+  fatal(...args) {
+    this.logs.push(['fatal', ...args])
+    this.logs_errors.push(['fatal', ...args])
+  }
+  error(...args) {
+    this.logs.push(['error', ...args])
+    this.logs_errors.push(['error', ...args])
+  }
+  warn(...args){ this.logs.push(['warn', ...args]) }
+  info(...args){ this.logs.push(['info', ...args]) }
+  debug(...args){ this.logs.push(['debug', ...args]) }
+  clearLogs(){
+    this.logs = []
+    this.logs_errors = []
   }
 }
