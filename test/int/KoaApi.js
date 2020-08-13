@@ -148,4 +148,5 @@ describe('test::int::KoaApi', function(){
     expect(logger.logs_errors).to.eql([])
     expect( res.data ).to.have.property('data').and.equal('ok')
   })
+  
 })
