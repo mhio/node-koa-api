@@ -49,7 +49,7 @@
   "dependencies": {
     "@koa/cors": "^3.1.0",
     "@koa/router": "^9.3.1",
-    "@mhio/koa-api-handle": "0.10.10",
+    "@mhio/koa-api-handle": "~0.11.0",
     "bluebird": "^3.5.1",
     "koa": "^2.13.0",
     "koa-bodyparser": "^4.3.0"

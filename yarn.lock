@@ -913,16 +913,15 @@
   resolved "https://registry.npmjs.org/@mhio/exception/-/exception-0.2.1.tgz#054c27f09bb7bb1d48461ab707a931873e12f9d9"
   integrity sha512-nhdUeHjIV8SwQXHucQHXjIltt8Cndw9iNiyejdAcPtZKro6W8MYbdOxdz9Q+T+yWntC9ub7rRMWDcao5sBpbDw==
 
-"@mhio/koa-api-handle@0.10.10":
-  version "0.10.10"
-  resolved "https://registry.npmjs.org/@mhio/koa-api-handle/-/koa-api-handle-0.10.10.tgz#0e2f2c9e6b32e817a4248c1a28c65408b344dcbb"
-  integrity sha512-vLWhroj7LVpK9bVAZoUb37kvapzKUkAuVgGbwHcANDCoa3x38LX6DQBNsoALYnv9EkvLw15HK2mW9rKH4Iw3nw==
+"@mhio/koa-api-handle@~0.11.0":
+  version "0.11.0"
+  resolved "https://registry.npmjs.org/@mhio/koa-api-handle/-/koa-api-handle-0.11.0.tgz#30a22aa5e0d55ceae3b67cabd8d75639f09ea76c"
+  integrity sha512-Gzcsh+7vW5PzXB4Ycp/NS3pF1dMMKQXUvCObZJYNPK8/Uv0PDhIEwRZcQ2br5h+yfV/Eu5OrX2DnsljhZHrwmQ==
   dependencies:
     "@mhio/api-response" "0.3.0"
     "@mhio/exception" "~0.2.1"
     bluebird "^3.5.1"
-    chai-subset "^1.6.0"
-    flatted "^2.0.2"
+    flatted "~3.0.4"
     pino-std-serializers "^2.4.2"
 
 "@mhio/message@~0.4.0":
@@ -2322,10 +2321,15 @@ flat@^4.1.0:
   dependencies:
     is-buffer "~2.0.3"
 
-flatted@^2.0.0, flatted@^2.0.2:
+flatted@^2.0.0:
   version "2.0.2"
   resolved "https://registry.npmjs.org/flatted/-/flatted-2.0.2.tgz#4575b21e2bcee7434aa9be662f4b7b5f9c2b5138"
   integrity sha512-r5wGx7YeOwNWNlCA0wQ86zKyDLMQr+/RB8xy74M4hTphfmjlijTSSXGuH8rnvKZnfT9i+75zmd8jcKdMR4O6jA==
+
+flatted@~3.0.4:
+  version "3.0.4"
+  resolved "https://registry.npmjs.org/flatted/-/flatted-3.0.4.tgz#f75ed043c803c8ca43a4d0bbc05f2bf20b5d9656"
+  integrity sha512-4gZhsMc26tSiMgQ+0gRN818ST2KCkX/4EvqocCkE1+SRb7mapNk4KLSP+XAj02jc8rxuyD3DrmI3a0BQ/TNOpg==
 
 follow-redirects@1.5.10:
   version "1.5.10"
