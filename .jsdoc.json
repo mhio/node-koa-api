@@ -4,5 +4,10 @@
   ],
   "markdown": {
     "idInHeadings": true
+  },
+  "templates": {
+    "default": {
+      "includeDate": false
+    }
   }
 }
