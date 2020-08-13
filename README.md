@@ -1,14 +1,14 @@
-@mhio/koa-api-handle
+@mhio/koa-api
 --------------------
 
-A Koa API Handler to do all the request heavy lifting, so you just write logic
+A Koa API to do all the request heavy lifting, so you just write logic
 
 
 ## Install
 
 ```
-yarn add @mhio/koa-api-handle
-npm install @mhio/koa-api-handle
+yarn add @mhio/koa-api
+npm install @mhio/koa-api
 ```
 
 ## Usage
@@ -16,12 +16,10 @@ npm install @mhio/koa-api-handle
 [API docs](doc/API.md)
 
 ```
-const Koa = require('koa')
-const Router = require('koa-router')
-const {KoaApiHandle} = require('@mhio/koa-api-handle')
+const {KoaApi} = require('@mhio/koa-api')
 
 class MyHandler {
-  
+
   static get error_message(){
     return 'Failure'
   }
@@ -43,20 +41,12 @@ class MyHandler {
 
 }
 
-const app = new Koa()
-const router = new Router()
-
-app.use(KoaApiHandle.error())
-app.use(KoaApiHandle.tracking())
-
-router.get('/ok', KoaApiHandle.response(MyHandler, 'ok'))
-router.post('/other', KoaApiHandle.response(MyHandler, 'other'))
-router.get('/error', KoaApiHandle.response(MyHandler.error.bind(MyError)))
-
-app.use(router.routes())
-   .use(router.allowedMethods())
-
-app.use(KoaApiHandle.notFound())
-
-app.listen()
+const routes = {
+  [ 'get', '/ok', MyHandler, 'ok' ],
+  { method: 'post', path: '/other', fn: MyHandler.other },
+  // binds `MyHandler` for you
+  { method: 'get', path: '/error', handler_object: MyHandler, handler_function: 'error' },
+)
+const api = new KoaApi()
+api.listen().then(srv => console.log(srv))
 ```
