@@ -3,6 +3,9 @@
 
 A Koa API to do all the request heavy lifting, so you just write logic
 
+Errors and json responses are handled, just `return` the data or `throw` the error
+
+Based on [`@mhio/koa-api-handler`](https://github.com/mhio/node-koa-api-handle) and it's [message format](https://github.com/mhio/js-message)
 
 ## Install
 
@@ -41,9 +44,17 @@ class MyHandler {
 
 }
 
+// Route config for the API
 const routes = {
-  [ 'get', '/ok', MyHandler, 'ok' ],
+  // Simple function
+  [ 'get', '/ok', MyHandler.ok ],
+
+  // Function bound to parent
+  [ 'get', '/ok2', MyHandler, 'ok' ],
+
+  // Object setup
   { method: 'post', path: '/other', fn: MyHandler.other },
+
   // binds `MyHandler` for you
   { method: 'get', path: '/error', handler_object: MyHandler, handler_function: 'error' },
 )
