@@ -1,5 +1,6 @@
 const {
   KoaApi,
+  KoaApiHandler,
   KoaApiException,
   // Dependencies
   KoaApiHandle,
@@ -12,6 +13,7 @@ const {
 
 module.exports = {
   KoaApi,
+  KoaApiHandler,
   KoaApiException,
   // Dependencies
   KoaApiHandle,

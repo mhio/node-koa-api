@@ -19,6 +19,23 @@ npm install @mhio/koa-api
 [API docs](doc/API.md)
 
 ```
+const {KoaApi, KoaApiHandler} = require('@mhio/koa-api')
+
+class MyHandler extends KoaApiHandler {
+  static getWhatever(ctx) {
+     return 'whatever'
+  }
+  static createOveralls(ctx) {
+     const blah = { truth: false }
+     return blah
+  }
+}
+
+const api = new KoaApi({ routes: MyHandler.routeConfig() })
+api.listen().then(srv => console.log(srv))
+```
+
+```
 const {KoaApi} = require('@mhio/koa-api')
 
 class MyHandler {
@@ -45,7 +62,7 @@ class MyHandler {
 }
 
 // Route config for the API
-const routes = {
+const routes = [
   // Simple function
   [ 'get', '/ok', MyHandler.ok ],
 
@@ -57,7 +74,7 @@ const routes = {
 
   // binds `MyHandler` for you
   { method: 'get', path: '/error', handler_object: MyHandler, handler_function: 'error' },
-)
-const api = new KoaApi()
+]
+const api = new KoaApi({ routes })
 api.listen().then(srv => console.log(srv))
 ```

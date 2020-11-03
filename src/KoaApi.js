@@ -17,7 +17,7 @@ const {
   ApiResponse
 } = require('@mhio/koa-api-handle')
 
-const debug = require('debug')('mh:KoaApi')
+const debug = require('debug')('mhio:koa-api:KoaApi')
 
 class KoaApiException extends Exception {}
 
@@ -34,7 +34,9 @@ class KoaApi {
    * @returns {object} Koa-Router
    */
   static setupRoutes(routes_config, opts = {}){
-    if (!routes_config || !routes_config.length) throw new KoaApiException('Setup requires an array of route configs')
+    if (!routes_config || !routes_config.length) {
+      throw new KoaApiException('Setup requires an array of route configs')
+    }
     const router = opts.router || new koaRouter()
     const app = opts.app
 
@@ -95,13 +97,20 @@ class KoaApi {
     return router
   }
 
+  // Things like RAML of OpenAPI would go in here. 
+  // Not sure how you would link functions to config
   static parseRouteConfig(route_config){
     if (Array.isArray(route_config)){
       const method = route_config[0]
       const path = route_config[1]
       const handler = route_config[2]
-      const handler_2 = route_config[3]
-      if (handler_2) return { method, path, handler_object: handler, handler_function: handler_2 }
+      const handler_2nd = route_config[3]
+      if (handler_2nd) return {
+          method,
+          path,
+          handler_object: handler,
+          handler_function: handler_2nd
+        }
       return { method, path, fn: handler}
     }
     return route_config
@@ -117,7 +126,7 @@ class KoaApi {
     app.use(KoaApiHandle.errors({ logger }))
     app.use(KoaApiHandle.logging({ logger }))
     app.use(KoaApiHandle.tracking())
-    app.use(bodyParser({ enableTypes: ['json'], jsonLimit: '8kb', strict: true }))
+    app.use(bodyParser({ enableTypes: ['json'], jsonLimit: '16kb', strict: true }))
     app.use(cors({ keepHeadersOnError: true }))
     app.use(router.routes()).use(router.allowedMethods())
     app.use(KoaApiHandle.notFound())
@@ -138,9 +147,9 @@ class KoaApi {
     const routes = opts.routes
     const logger = opts.logger || this.constructor.pinoLikeConsoleLogger()
     const app = opts.app
-    const { app: apiapp, router } = this.constructor.setupApp({ routes_config: routes, logger, app })
+    const { app: api_app, router } = this.constructor.setupApp({ routes_config: routes, logger, app })
     this.routes = routes
-    this.app = apiapp
+    this.app = api_app
     this.router = router
     this.logger = logger
   }

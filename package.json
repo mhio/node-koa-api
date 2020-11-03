@@ -1,6 +1,6 @@
 {
   "name": "@mhio/koa-api",
-  "version": "0.1.0",
+  "version": "0.2.0-0",
   "description": "Koa APIs",
   "main": "lib/index.js",
   "scripts": {
@@ -52,7 +52,8 @@
     "@mhio/koa-api-handle": "~0.11.0",
     "bluebird": "^3.5.1",
     "koa": "^2.13.0",
-    "koa-bodyparser": "^4.3.0"
+    "koa-bodyparser": "^4.3.0",
+    "lodash.snakecase": "^4.1.1"
   },
   "mocha": {
     "require": [
