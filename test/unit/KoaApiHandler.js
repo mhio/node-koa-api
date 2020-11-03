@@ -13,7 +13,7 @@ describe('test::unit::KoaApiHandler', function(){
   
   it('should return a routeConfig array', function(){
     class TestApi extends KoaApiHandler {
-      static getMe(ctx){ return true }
+      static getMe(){ return true }
     }
     expect(TestApi.routeConfig()).to.containSubset([])
     const first = TestApi.routeConfig()[0]
