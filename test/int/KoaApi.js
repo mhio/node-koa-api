@@ -22,10 +22,10 @@ describe('test::int::KoaApi', function(){
   })
 
   it('should generate a koa response', async function(){
-    let oroutes = [
+    let routes = [
       { path: '/ok', method: 'get', fn: ()=> Promise.resolve('ok') }
     ]
-    const router = KoaApi.setupRoutes(oroutes)
+    const router = KoaApi.setupRoutes(routes)
     app.use(router.routes()).use(router.allowedMethods())
     let res = await request.get('/ok')
     expect( res.status ).to.equal(200)
@@ -33,10 +33,10 @@ describe('test::int::KoaApi', function(){
   })
 
   it('should generate a koa response', async function(){
-    let oroutes = [
+    let routes = [
       { path: '/ok', method: 'get', fn: ()=> Promise.resolve('ok') }
     ]
-    KoaApi.setupRoutes(oroutes, { app })
+    KoaApi.setupRoutes(routes, { app })
     let res = await request.get('/ok')
     expect( res.status ).to.equal(200)
     expect( res.data ).to.have.property('data').and.equal('ok')
@@ -47,29 +47,29 @@ describe('test::int::KoaApi', function(){
       ok: function() { return Promise.resolve(this.value) },
       value: 'okeydokey',
     }
-    let oroutes = [
+    let routes = [
       { path: '/ok', method: 'get', handler_object: handler, handler_function: 'ok' }
     ]
-    KoaApi.setupRoutes(oroutes, { app })
+    KoaApi.setupRoutes(routes, { app })
     let res = await request.get('/ok')
     expect( res.status ).to.equal(200)
     expect( res.data ).to.have.property('data').and.equal('okeydokey')
   })
 
   it('should generate a koa response for a sub router', async function(){
-    let oroutes = [
+    let routes = [
       { path: '/ok', method: 'get', fn: ()=> Promise.resolve('ok1') },
       { path: '/sub', routes: [
         { path: '/ok', method: 'get', fn: ()=> Promise.resolve('ok2') },
       ]},
     ]
-    KoaApi.setupRoutes(oroutes, { app })
+    KoaApi.setupRoutes(routes, { app })
     let res = await request.get('/sub/ok')
     expect( res.status ).to.equal(200)
     expect( res.data ).to.have.property('data').and.equal('ok2')
-    let resok = await request.get('/ok')
-    expect( resok.status ).to.equal(200)
-    expect( resok.data ).to.have.property('data').and.equal('ok1')
+    let res_ok = await request.get('/ok')
+    expect( res_ok.status ).to.equal(200)
+    expect( res_ok.data ).to.have.property('data').and.equal('ok1')
   })
 
   it('should create a KoaApi with no config', function(){
@@ -130,17 +130,17 @@ describe('test::int::KoaApi', function(){
 
   describe('listens', function(){
 
-    let lrequest
+    let listens_request
 
     afterEach('close', async function(){
-      await lrequest.close()
+      await listens_request.close()
     })
 
     it('should listen on http', async function(){
       const api = new KoaApi({ routes: [[ 'get', '/ok', async ()=>'ok' ]], logger })
       const srv = await api.listen()
-      lrequest = Taxios.srv(srv)
-      let res = await lrequest.get('/ok')
+      listens_request = Taxios.srv(srv)
+      let res = await listens_request.get('/ok')
       expect(logger.logs_errors).to.eql([])
       expect( res.data ).to.have.property('data').and.equal('ok')
     })
@@ -148,8 +148,8 @@ describe('test::int::KoaApi', function(){
     xit('should listen on http2', async function(){
       const api = new KoaApi({ routes: [[ 'get', '/ok', async()=>'ok' ]], app, logger, })
       const srv2 = await api.listen2()
-      lrequest = Taxios.srv2(srv2)
-      let res = await lrequest.get('/ok')
+      listens_request = Taxios.srv2(srv2)
+      let res = await listens_request.get('/ok')
       expect(logger.logs_errors).to.eql([])
       expect( res.data ).to.have.property('data').and.equal('ok')
     })

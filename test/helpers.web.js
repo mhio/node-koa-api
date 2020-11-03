@@ -53,7 +53,7 @@ export class Taxios {
       // this.srv2 = http2.createServer({}, this.app.callback())
       const opts = {
         key: this.constructor.tls_self_key,
-        cert: this.constrcutor.tls_self_cert,
+        cert: this.constructor.tls_self_cert,
       }
       this.srv2 = http2.createSecureServer(opts, this.app.callback())
       this.srv2.listen(address, ()=> {
