@@ -1,7 +1,7 @@
 /* global expect */
 
 const {
-  KoaApi, KoaApiException,
+  KoaApi, KoaApiHandler, KoaApiException,
   // Dependencies
   KoaApiHandle,
   KoaApiHandleException,
@@ -15,6 +15,15 @@ describe('test::built::module', function(){
 
   it('should load the KoaApi', function(){
     expect( KoaApi, 'KoaApi module' ).to.be.ok
+  })
+  it('should load the KoaApiHandler', function(){
+    expect( KoaApiHandler, 'KoaApiHandler module' ).to.be.ok
+  })
+  it('should creatr a KoaApiHandler route config', function(){
+    class Testa extends KoaApiHandler {
+      static async getOk(){ return true }
+    }
+    expect( Testa.routeConfig() ).to.be.an('array')
   })
 
   it('should load KoaApiException', function(){

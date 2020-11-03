@@ -1,6 +1,5 @@
 const {
   KoaApi,
-  KoaApiHandler,
   KoaApiException,
   // Dependencies
   KoaApiHandle,
@@ -10,6 +9,7 @@ const {
   MessageError,
   ApiResponse
 } = require('./KoaApi')
+const { KoaApiHandler } = require('./KoaApiHandler')
 
 module.exports = {
   KoaApi,
