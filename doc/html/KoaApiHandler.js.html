@@ -33,6 +33,14 @@ const debug = debugr('mhio:koa-api:KoaApiHandler')
 
 export class KoaApiHandler {
 
+  static _initialiseClass(){
+    /**
+     * Whether to hyphenate API route paths
+     */
+    // this.path_joiner = ''
+    this.path_joiner = '-'
+  }
+  
   /**
    * Simple `bind` helper
    * @param {string} name               - Function name to bind
@@ -46,8 +54,12 @@ export class KoaApiHandler {
    * Get the second camel case word onwards
    * @param {string} function_name      - Function name to split
    */
-  static routeHttpName(function_name){
-    return _snakecase(function_name).split('_').slice(1).join('').toLowerCase()
+  static routeHttpName(function_name, joiner = ''){
+    return _snakecase(function_name)
+      .split('_')
+      .slice(1)
+      .join(joiner)
+      .toLowerCase()
   }
   
   /**
@@ -56,7 +68,7 @@ export class KoaApiHandler {
    * @returns {object}                  - 
    */
   static routeHttpMethod(function_name){
-    const route_name = this[`${function_name}Route`] || this.routeHttpName(function_name)
+    const route_name = this[`route_${function_name}`] || this.routeHttpName(function_name, this.path_joiner)
     if (function_name.startsWith('get')) {
       return { route_method: 'get', route_name }
     }
@@ -95,6 +107,7 @@ export class KoaApiHandler {
   }
   
 }
+KoaApiHandler._initialiseClass()
 
 export default KoaApiHandler
 </code></pre>
