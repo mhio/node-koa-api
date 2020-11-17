@@ -17,7 +17,11 @@ const {
   ApiResponse
 } = require('@mhio/koa-api-handle')
 
+const { KoaApiHandler } = require('./KoaApiHandler')
+
 const debug = require('debug')('mhio:koa-api:KoaApi')
+export function log(level, ...args){ return console.log('%s %s', Date.now(), level, ...args) }
+export function noop(){}
 
 class KoaApiException extends Exception {}
 
@@ -123,11 +127,16 @@ class KoaApi {
     const router = (routes_config)
       ? this.setupRoutes(routes_config)
       : new koaRouter()
+    const use = opts.use
     app.use(KoaApiHandle.errors({ logger }))
     app.use(KoaApiHandle.logging({ logger }))
     app.use(KoaApiHandle.tracking())
-    app.use(bodyParser({ enableTypes: ['json'], jsonLimit: '16kb', strict: true }))
     app.use(cors({ keepHeadersOnError: true }))
+    app.use(bodyParser({ enableTypes: ['json'], jsonLimit: '16kb', strict: true }))
+    if (use) {
+      debug('setup app - adding provided `use` middleware')
+      app.use(use)
+    }
     app.use(router.routes()).use(router.allowedMethods())
     app.use(KoaApiHandle.notFound())
     return { app, router }
@@ -135,21 +144,32 @@ class KoaApi {
 
   static pinoLikeConsoleLogger(){
     return {
-      fatal: console.error,
-      error: console.error,
-      warn: console.log,
-      info: console.info,
-      debug: console.debug
+      level: 'info',
+      silent: noop,
+      fatal(){ return log('fatal', ...args) },
+      error(){ return log('error', ...args) },
+      warn(){  return log('warn', ...args)  },
+      info(){  return log('info', ...args)  },
+      debug(){ return log('debug', ...args) },
+      trace(){ return log('trace', ...args) },
     }
   }
 
   constructor(opts = {}){
     const routes = opts.routes
     const logger = opts.logger || this.constructor.pinoLikeConsoleLogger()
-    const app = opts.app
-    const { app: api_app, router } = this.constructor.setupApp({ routes_config: routes, logger, app })
-    this.routes = routes
-    this.app = api_app
+    const provided_app = opts.app
+    const provided_middleware = opts.use
+    const { app, router } = this.constructor.setupApp({
+      routes_config: routes,
+      logger,
+      app: provided_app,
+      use: provided_middleware,
+    })
+    this.routes = (routes instanceof KoaApiHandler)
+      ? routes.routeConfig()
+      : routes
+    this.app = app
     this.router = router
     this.logger = logger
   }

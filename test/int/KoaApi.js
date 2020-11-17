@@ -128,6 +128,20 @@ describe('test::int::KoaApi', function(){
     expect( res3.data ).to.have.property('data').and.equal('ok3')
   })
 
+  it('should create a KoaApi with global `use` middleware', async function(){
+    const routes = [
+      { path: '/ok', method: 'get', fn: ()=> Promise.resolve('ok') },
+    ]
+    const use = (ctx) => {
+      if (ctx.request.path === '/ok') ctx.body = 'intercepted'
+      console.log(ctx.request)
+    }
+    new KoaApi({ routes, app, logger, use })
+    let res = await request.get('/ok')
+    expect( res.status ).to.equal(200)
+    expect( res.data ).to.equal('intercepted')
+  })
+
   describe('listens', function(){
 
     let listens_request

@@ -36,6 +36,7 @@ export class KoaApiHandler {
   
   /**
    * Get the first camel case word as route method and the rest as a route /path string
+   * If a route method has a `route_{{Method}}` property, that will be used instead.
    * @param {string} function_name      - Function name to turn into route method/path
    * @returns {object}                  - 
    */
