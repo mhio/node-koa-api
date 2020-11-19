@@ -120,6 +120,15 @@ class KoaApi {
     return route_config
   }
 
+  /**
+   * Setup a KoaApi app
+   * @params options {object} - Options
+   * @params options.logging {object} - Logging options for KoaApiHandle.logging
+   * @params options.errors {object} - Error handling options for KoaApiHandle.errors
+   * @params options.tracking {object} - Options KoaApiHandle.tracking
+   * @params options.cors {object} - Options KoaApiHandle.cors  [@koa/cors](http://cors)
+   * @params options.bodyParser {object} - Options KoaApiHandle.bodyParser [@koa/bodyParser](http://cors)
+   */
   static setupApp(opts = {}){
     const routes_config = opts.routes_config
     const app = opts.app || new Koa()
@@ -127,12 +136,20 @@ class KoaApi {
     const router = (routes_config)
       ? this.setupRoutes(routes_config)
       : new koaRouter()
+
+    const logging_config = opts.logging || {}
+    const errors_config = opts.errors || {}
+    const tracking_config = opts.tracking || {}
+    const cors_config = opts.cors || {}
+    const bodyParser_config = opts.bodyParser || {}
     const use = opts.use
-    app.use(KoaApiHandle.errors({ logger }))
-    app.use(KoaApiHandle.logging({ logger }))
-    app.use(KoaApiHandle.tracking())
-    app.use(cors({ keepHeadersOnError: true }))
-    app.use(bodyParser({ enableTypes: ['json'], jsonLimit: '16kb', strict: true }))
+
+    debug('logging config spread', { logger, ...logging_config })
+    app.use(KoaApiHandle.errors({ logger, ...errors_config }))
+    app.use(KoaApiHandle.logging({ logger, ...logging_config }))
+    app.use(KoaApiHandle.tracking({ ...tracking_config }))
+    app.use(cors({ keepHeadersOnError: true, ...cors_config }))
+    app.use(bodyParser({ enableTypes: ['json'], jsonLimit: '16kb', strict: true, ...bodyParser_config }))
     if (use) {
       debug('setup app - adding provided `use` middleware')
       app.use(use)
@@ -146,12 +163,12 @@ class KoaApi {
     return {
       level: 'info',
       silent: noop,
-      fatal(){ return log('fatal', ...args) },
-      error(){ return log('error', ...args) },
-      warn(){  return log('warn', ...args)  },
-      info(){  return log('info', ...args)  },
-      debug(){ return log('debug', ...args) },
-      trace(){ return log('trace', ...args) },
+      fatal(...args){ return log('fatal', ...args) },
+      error(...args){ return log('error', ...args) },
+      warn(...args){  return log('warn', ...args)  },
+      info(...args){  return log('info', ...args)  },
+      debug(...args){ return log('debug', ...args) },
+      trace(...args){ return log('trace', ...args) },
     }
   }
 
@@ -165,6 +182,11 @@ class KoaApi {
       logger,
       app: provided_app,
       use: provided_middleware,
+      logging: opts.logging,
+      cors: opts.cors,
+      bodyParser: opts.bodyParser,
+      tracking: opts.tracking, 
+      errors: opts.errors, 
     })
     this.routes = (routes instanceof KoaApiHandler)
       ? routes.routeConfig()
