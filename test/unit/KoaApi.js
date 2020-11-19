@@ -64,5 +64,10 @@ describe('test::unit::KoaApi', function(){
       path: '/ok' 
     })
   })
+  it('should have a pino dummy', function(){
+    const log = KoaApi.pinoLikeConsoleLogger()
+    expect(log).to.be.ok
+    expect(log.fatal('wow')).to.be.undefined
+  })
 
 })

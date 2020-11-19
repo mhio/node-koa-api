@@ -20,7 +20,7 @@ const {
 const { KoaApiHandler } = require('./KoaApiHandler')
 
 const debug = require('debug')('mhio:koa-api:KoaApi')
-export function log(level, ...args){ return console.log('%s %s', Date.now(), level, ...args) }
+export function log(level, ...args){ return console.log('%s %s', Date.now(), level, ...args) } // nyc-ignore-line
 export function noop(){}
 
 class KoaApiException extends Exception {}

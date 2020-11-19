@@ -167,13 +167,13 @@ describe('test::int::KoaApi', function(){
       }
     }
     const routes = [{ method: 'get', path: '/custom', fn: ()=> Promise.reject(new CustomError('no')), }]
-    const api = new KoaApi({ routes, logger, app, errors: { allowed_errors: {CustomError: true}} })
+    new KoaApi({ routes, logger, app, errors: { allowed_errors: {CustomError: true}} })
     const res = await request.sendError('get', '/custom')
     expect( res.data ).to.have.property('error').and.containSubset({ message: 'no' })
   })
 
   it('should inject tracking options into KoaApiHandle', async function(){
-    const api = new KoaApi({ routes: ok_routes, logger, app, tracking: { transaction_trust: true } })
+    new KoaApi({ routes: ok_routes, logger, app, tracking: { transaction_trust: true } })
     const res = await request.get('/ok', null,{ headers: { 'x-transaction-id': 'qwerqwer' }})
     expect( res.data ).to.have.property('data').and.equal('ok')
     expect( res.headers ).to.have.property('x-transaction-id').and.equal('qwerqwer')
@@ -181,7 +181,7 @@ describe('test::int::KoaApi', function(){
 
   it('should inject cors options into KoaApiHandle', async function(){
     //const use = ctx => console.log('headers',ctx.request.headers, ctx.get('Origin'))
-    const api = new KoaApi({ routes: ok_routes, logger, app, cors: { origin: 'apro://nope' } })
+    new KoaApi({ routes: ok_routes, logger, app, cors: { origin: 'apro://nope' } })
     const port = request.srv.address().port
     const res = await request.send('options', `http://127.0.0.1:${port}/ok`, null, {
       headers: {
@@ -194,7 +194,7 @@ describe('test::int::KoaApi', function(){
 
   it('should inject bodyParser options into KoaApiHandle', async function(){
     const routes = [{ method: 'post', path: '/ok', fn: ()=> Promise.resolve('ok'), }]
-    const api = new KoaApi({ routes, logger, app, bodyParser: { jsonLimit: '32b' } })
+    new KoaApi({ routes, logger, app, bodyParser: { jsonLimit: '32b' } })
     const res = await request.sendError('post', '/ok', { data: 'somedatathatislongerthan32b' })
     expect( res.data ).to.have.property('error').and.containSubset({ name: 'PayloadTooLargeError' })
     expect( res.status ).to.equal(413)
