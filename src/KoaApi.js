@@ -212,6 +212,7 @@ class KoaApi {
    * @param {string|number} address 
    * @returns {Promise<http2.Server>}
    */
+  /* istanbul ignore next */
   listen2(address){
     return new Promise(ok => {
       // this.srv2 = http2.createServer({}, this.app.callback())
