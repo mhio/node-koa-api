@@ -12,6 +12,7 @@
     * _static_
         * [.setupRoutes(app, router, routes_config)](#KoaApi.setupRoutes) ⇒ <code>object</code>
         * [.setupRoute(router, route_config)](#KoaApi.setupRoute) ⇒ <code>object</code>
+        * [.setupApp()](#KoaApi.setupApp)
 
 
 * * *
@@ -79,6 +80,21 @@
 | route_config.handler_object | <code>object</code> | <p>Object with handler function</p> |
 | route_config.handler_function | <code>string</code> | <p>Method name to call in handler object</p> |
 
+
+* * *
+
+<a name="KoaApi.setupApp"></a>
+
+### KoaApi.setupApp()
+<p>Setup a KoaApi app</p>
+
+**Kind**: static method of [<code>KoaApi</code>](#KoaApi)  
+**Params**: options {object} - Options  
+**Params**: options.logging {object} - Logging options for KoaApiHandle.logging  
+**Params**: options.errors {object} - Error handling options for KoaApiHandle.errors  
+**Params**: options.tracking {object} - Options KoaApiHandle.tracking  
+**Params**: options.cors {object} - Options KoaApiHandle.cors  [@koa/cors](http://cors)  
+**Params**: options.bodyParser {object} - Options KoaApiHandle.bodyParser [@koa/bodyParser](http://cors)  
 
 * * *
 
