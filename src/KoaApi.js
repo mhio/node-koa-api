@@ -203,7 +203,7 @@ class KoaApi {
    */
   listen(address){
     return new Promise(ok => {
-      this.srv = http.createServer(this.app.callback())
+      if (!this.srv) this.srv = http.createServer(this.app.callback())
       this.srv.listen(address, ()=> ok(this.srv))
     })
   }
@@ -216,7 +216,7 @@ class KoaApi {
   listen2(address){
     return new Promise(ok => {
       // this.srv2 = http2.createServer({}, this.app.callback())
-      this.srv2 = http2.createSecureServer({}, this.app.callback())
+      if (!this.srv2) this.srv2 = http2.createSecureServer({}, this.app.callback())
       this.srv2.listen(address, ()=> ok(this.srv2))
     })
   }
