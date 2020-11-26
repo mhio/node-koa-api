@@ -8,7 +8,6 @@
 * [KoaApi](#KoaApi)
     * _instance_
         * [.listen(address)](#KoaApi+listen) ⇒ <code>Promise.&lt;http.Server&gt;</code>
-        * [.listen2(address)](#KoaApi+listen2) ⇒ <code>Promise.&lt;http2.Server&gt;</code>
     * _static_
         * [.setupRoutes(app, router, routes_config)](#KoaApi.setupRoutes) ⇒ <code>object</code>
         * [.setupRoute(router, route_config)](#KoaApi.setupRoute) ⇒ <code>object</code>
@@ -27,20 +26,6 @@
 | Param | Type | Description |
 | --- | --- | --- |
 | address | <code>string</code> \| <code>number</code> | <p>Node http server listen address</p> |
-
-
-* * *
-
-<a name="KoaApi+listen2"></a>
-
-### koaApi.listen2(address) ⇒ <code>Promise.&lt;http2.Server&gt;</code>
-<p>Setup a http2 server to listen for the app</p>
-
-**Kind**: instance method of [<code>KoaApi</code>](#KoaApi)  
-
-| Param | Type |
-| --- | --- |
-| address | <code>string</code> \| <code>number</code> | 
 
 
 * * *
