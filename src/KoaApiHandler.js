@@ -74,7 +74,8 @@ export class KoaApiHandler {
         continue
       }
       debug('routeConfig found [%s]', fn_name, route_method, route_name)
-      config.push([route_method, `/${route_name}`, this.bindFunction(fn_name) ])
+      const route_name_prefix = (route_name.startsWith('/')) ? '' : '/'
+      config.push([route_method, `${route_name_prefix}${route_name}`, this.bindFunction(fn_name) ])
     }
     return config
   }
