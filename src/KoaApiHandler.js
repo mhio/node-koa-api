@@ -19,6 +19,8 @@ export class KoaApiHandler {
    * @returns {function}                - Function bound to `this` class object
    */
   static bindFunction(name){
+    if (!this[name]) throw new Error(`No property named "${name}"`)
+    if (!this[name].bind) throw new Error(`Property "${name}" is not a function`)
     return this[name].bind(this)
   }
   
@@ -41,7 +43,7 @@ export class KoaApiHandler {
    * @returns {object}                  - 
    */
   static routeHttpMethod(function_name){
-    const route_name = this[`route_${function_name}`] || this.routeHttpName(function_name, this.path_joiner)
+    const route_name = this[`route_${function_name}`] || this[`path_${function_name}`] || this.routeHttpName(function_name, this.path_joiner)
     if (function_name.startsWith('get')) {
       return { route_method: 'get', route_name }
     }

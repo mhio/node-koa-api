@@ -21,4 +21,32 @@ describe('test::unit::KoaApiHandler', function(){
     expect(first[2]).to.be.a('function') // can't test functions in arrays in subset
   })
 
+  it('should return a routeConfig array with custom route_', function(){
+    class TestApi extends KoaApiHandler {
+      static route_getMe = 'you'
+      static getMe(){ return true }
+    }
+    expect(TestApi.routeConfig()).to.containSubset([])
+    const first = TestApi.routeConfig()[0]
+    expect(first).to.containSubset([ 'get', '/you' ]) 
+  })
+
+  it('should return a routeConfig array with custom path_', function(){
+    class TestApi extends KoaApiHandler {
+      static path_getMe = 'you'
+      static getMe(){ return true }
+    }
+    expect(TestApi.routeConfig()).to.containSubset([])
+    const first = TestApi.routeConfig()[0]
+    expect(first).to.containSubset([ 'get', '/you' ]) 
+  })
+
+  it('should throw a nice error when a user messes up a property name', function(){
+    class TestApi extends KoaApiHandler {
+      static post_thing = 'you'
+    }
+    const fn = ()=> TestApi.routeConfig()
+    expect(fn).to.throw('not a function')
+  })
+
 })
