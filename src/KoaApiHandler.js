@@ -43,41 +43,43 @@ export class KoaApiHandler {
    * @returns {object}                  - 
    */
   static routeHttpMethod(function_name){
-    const route_name = this[`route_${function_name}`] || this[`path_${function_name}`] || this.routeHttpName(function_name, this.path_joiner)
+    const route_path = this[`route_${function_name}`] || this[`path_${function_name}`] || this.routeHttpName(function_name, this.path_joiner)
     if (function_name.startsWith('get')) {
-      return { route_method: 'get', route_name }
+      return { route_method: 'get', route_path }
     }
     if (function_name.startsWith('post') || function_name.startsWith('create')) {
-      return { route_method: 'post', route_name }
+      return { route_method: 'post', route_path }
     }
     if (function_name.startsWith('delete') || function_name.startsWith('remove')) {
-      return { route_method: 'delete', route_name }
+      return { route_method: 'delete', route_path }
     }
     if (function_name.startsWith('patch') || function_name.startsWith('update')) {
-      return { route_method: 'patch', route_name }
+      return { route_method: 'patch', route_path }
     }
     if (function_name.startsWith('put') || function_name.startsWith('replace')) {
-      return { route_method: 'put', route_name }
+      return { route_method: 'put', route_path }
     }
     return { skip: true }
   }
 
   /**
    * Return the KoaApi route config array for this handler
+   * @params {Object} options
+   * @params {String} options.path_prefix  -  Path to prefix all routes with ('/something')
    * @returns {Array} KoaApi route config array
    */
-  static routeConfig(){
+  static routeConfig({ path_prefix = '' } = {}){
     const config = []
     debug('routeConfig for %s', this.name)
     for (const fn_name of Object.getOwnPropertyNames(this)){
-      const { route_method, route_name, skip } = this.routeHttpMethod(fn_name)
+      const { route_method, route_path, skip } = this.routeHttpMethod(fn_name)
       if (skip) {
         // debug('routeConfig skipping', fn_name)
         continue
       }
-      debug('routeConfig found [%s]', fn_name, route_method, route_name)
-      const route_name_prefix = (route_name.startsWith('/')) ? '' : '/'
-      config.push([route_method, `${route_name_prefix}${route_name}`, this.bindFunction(fn_name) ])
+      debug('routeConfig found [%s]', fn_name, route_method, route_path)
+      const route_path_prefix = (route_path.startsWith('/')) ? '' : '/'
+      config.push([route_method, `${path_prefix}${route_path_prefix}${route_path}`, this.bindFunction(fn_name) ])
     }
     return config
   }
