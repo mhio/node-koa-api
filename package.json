@@ -1,6 +1,6 @@
 {
   "name": "@mhio/koa-api",
-  "version": "0.5.0-4",
+  "version": "0.5.0",
   "description": "Koa APIs",
   "main": "lib/index.js",
   "scripts": {
