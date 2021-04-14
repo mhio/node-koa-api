@@ -110,7 +110,6 @@ export class KoaApiHandler {
       }
       const route_path_prefix = (route_path.startsWith('/')) ? '' : '/'
       const o = {
-        method: route_method,
         path: `${path_prefix}${route_path_prefix}${route_path}`,
       }
       if (routes) {
@@ -120,6 +119,7 @@ export class KoaApiHandler {
       else {
         debug('routeConfig found routes [%s]', fn_name, route_method, route_path)
         o.fn = this.bindFunction(fn_name)
+        o.method = route_method
       }
       config.push(o)
     }
