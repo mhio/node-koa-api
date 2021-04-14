@@ -32,21 +32,32 @@ class KoaApi {
 
   /**
    * Setup an array of routes
-   * @param {object} app            - Koa app
-   * @param {object} router         - @koa/router instance
-   * @param {array} routes_config    - Array of KoaApiHandle route config objects
+   * @param {array|KoaApiHandler} routes_config    - Array of KoaApiHandler route config objects or KoaApiHandler
+   * @param {object} opts            -
+   * @param {object} opts.router     - @koa/router instance
+   * @param {object} opts.app        - Koa app
    * @returns {object} Koa-Router
    */
   static setupRoutes(routes_config, opts = {}){
-    if (!routes_config || !routes_config.length) {
-      throw new KoaApiException('Setup requires an array of route configs')
+    if (!routes_config || ( !routes_config.length && !routes_config.routeConfig )) {
+      throw new KoaApiException('Setup requires an array of route configs or an instance of KoaApiHandler')
     }
     const router = opts.router || new koaRouter()
     const app = opts.app
 
-    for (const route_config of routes_config){
-      debug('Adding route', route_config)
-      this.setupRoute(router, route_config)
+    const loop_routes_config = (routes_config.routeConfig)
+      ? routes_config.routeConfig()
+      : routes_config
+    for (const route_config of loop_routes_config){
+      if (route_config.routeConfig) {
+        const handler_routes = route_config.routeConfig()
+        for (const handler_route of handler_routes) {
+          this.setupRoute(router, handler_route)
+        }
+      }
+      else {
+        this.setupRoute(router, route_config)
+      }
     }
 
     if (app) {
@@ -69,6 +80,7 @@ class KoaApi {
    */
   static setupRoute(router, route_config = {}) {
     if (!router) throw new KoaApiException('Setup route requires a @koa/router')
+    debug('setupRoute got route config', route_config)
     const { method, path, routes, fn, handler_object, handler_function } = this.parseRouteConfig(route_config)
     if (!path) throw new KoaApiException('Setup route requires route path')
     if (routes) {
@@ -104,6 +116,7 @@ class KoaApi {
   // Things like RAML of OpenAPI would go in here. 
   // Not sure how you would link functions to config
   static parseRouteConfig(route_config){
+    debug('converting route_config', route_config)
     if (Array.isArray(route_config)){
       const method = route_config[0]
       const path = route_config[1]
@@ -125,9 +138,10 @@ class KoaApi {
    * @params options {object} - Options
    * @params options.logging {object} - Logging options for KoaApiHandle.logging
    * @params options.errors {object} - Error handling options for KoaApiHandle.errors
-   * @params options.tracking {object} - Options KoaApiHandle.tracking
-   * @params options.cors {object} - Options KoaApiHandle.cors  [@koa/cors](http://cors)
-   * @params options.bodyParser {object} - Options KoaApiHandle.bodyParser [@koa/bodyParser](http://cors)
+   * @params options.tracking {object}     - Options KoaApiHandle.tracking
+   * @params options.cors {object}         - Options KoaApiHandle.cors  [@koa/cors](http://cors)
+   * @params options.bodyParser {object}   - Options KoaApiHandle.bodyParser [@koa/bodyParser](http://cors)
+   * @params options.routes_config {Array<KoaApiHandler>} - Options KoaApiHandle.routes_config KoaApiHandler
    */
   static setupApp(opts = {}){
     const routes_config = opts.routes_config

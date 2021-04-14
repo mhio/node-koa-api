@@ -43,7 +43,7 @@ export class KoaApiHandler {
    * @returns {object}                  - 
    */
   static routeHttpMethod(function_name){
-    const route_path = this[`route_${function_name}`] || this[`path_${function_name}`] || this.routeHttpName(function_name, this.path_joiner)
+    const route_path = this[`path_${function_name}`] || this.routeHttpName(function_name, this.path_joiner)
     if (function_name.startsWith('get')) {
       return { route_method: 'get', route_path }
     }
@@ -59,6 +59,9 @@ export class KoaApiHandler {
     if (function_name.startsWith('put') || function_name.startsWith('replace')) {
       return { route_method: 'put', route_path }
     }
+    if (function_name.startsWith('routes')) {
+      return { routes: this[function_name], route_path }
+    }
     return { skip: true }
   }
 
@@ -72,14 +75,25 @@ export class KoaApiHandler {
     const config = []
     debug('routeConfig for %s', this.name)
     for (const fn_name of Object.getOwnPropertyNames(this)){
-      const { route_method, route_path, skip } = this.routeHttpMethod(fn_name)
+      const { route_method, route_path, skip, routes } = this.routeHttpMethod(fn_name)
       if (skip) {
-        // debug('routeConfig skipping', fn_name)
+        debug('routeConfig skipping', fn_name)
         continue
       }
-      debug('routeConfig found [%s]', fn_name, route_method, route_path)
       const route_path_prefix = (route_path.startsWith('/')) ? '' : '/'
-      config.push([route_method, `${path_prefix}${route_path_prefix}${route_path}`, this.bindFunction(fn_name) ])
+      const o = {
+        method: route_method,
+        path: `${path_prefix}${route_path_prefix}${route_path}`,
+      }
+      if (routes) {
+        debug('routeConfig found sub routes [%s]', route_path, routes)
+        o.routes = routes
+      }
+      else {
+        debug('routeConfig found routes [%s]', fn_name, route_method, route_path)
+        o.fn = this.bindFunction(fn_name)
+      }
+      config.push(o)
     }
     return config
   }
