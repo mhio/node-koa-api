@@ -9,7 +9,7 @@
     * _instance_
         * [.listen(address)](#KoaApi+listen) ⇒ <code>Promise.&lt;http.Server&gt;</code>
     * _static_
-        * [.setupRoutes(app, router, routes_config)](#KoaApi.setupRoutes) ⇒ <code>object</code>
+        * [.setupRoutes(routes_config, opts)](#KoaApi.setupRoutes) ⇒ <code>object</code>
         * [.setupRoute(router, route_config)](#KoaApi.setupRoute) ⇒ <code>object</code>
         * [.setupApp()](#KoaApi.setupApp)
 
@@ -32,7 +32,7 @@
 
 <a name="KoaApi.setupRoutes"></a>
 
-### KoaApi.setupRoutes(app, router, routes_config) ⇒ <code>object</code>
+### KoaApi.setupRoutes(routes_config, opts) ⇒ <code>object</code>
 <p>Setup an array of routes</p>
 
 **Kind**: static method of [<code>KoaApi</code>](#KoaApi)  
@@ -40,9 +40,10 @@
 
 | Param | Type | Description |
 | --- | --- | --- |
-| app | <code>object</code> | <p>Koa app</p> |
-| router | <code>object</code> | <p>@koa/router instance</p> |
-| routes_config | <code>array</code> | <p>Array of KoaApiHandle route config objects</p> |
+| routes_config | <code>array</code> \| <code>KoaApiHandler</code> | <p>Array of KoaApiHandler route config objects or KoaApiHandler</p> |
+| opts | <code>object</code> | <ul> <li></li> </ul> |
+| opts.router | <code>object</code> | <p>@koa/router instance</p> |
+| opts.app | <code>object</code> | <p>Koa app</p> |
 
 
 * * *
@@ -77,9 +78,10 @@
 **Params**: options {object} - Options  
 **Params**: options.logging {object} - Logging options for KoaApiHandle.logging  
 **Params**: options.errors {object} - Error handling options for KoaApiHandle.errors  
-**Params**: options.tracking {object} - Options KoaApiHandle.tracking  
-**Params**: options.cors {object} - Options KoaApiHandle.cors  [@koa/cors](http://cors)  
-**Params**: options.bodyParser {object} - Options KoaApiHandle.bodyParser [@koa/bodyParser](http://cors)  
+**Params**: options.tracking {object}     - Options KoaApiHandle.tracking  
+**Params**: options.cors {object}         - Options KoaApiHandle.cors  [@koa/cors](http://cors)  
+**Params**: options.bodyParser {object}   - Options KoaApiHandle.bodyParser [@koa/bodyParser](http://cors)  
+**Params**: options.routes_config {Array<KoaApiHandler>} - Options KoaApiHandle.routes_config KoaApiHandler  
 
 * * *
 
