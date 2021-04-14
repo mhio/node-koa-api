@@ -12,40 +12,44 @@ describe('test::unit::KoaApiHandler', function(){
   })
   
   it('should return a routeConfig array', function(){
-    class TestApi extends KoaApiHandler {
+    class TestApiRo extends KoaApiHandler {
       static getMe(){ return true }
     }
-    expect(TestApi.routeConfig()).to.containSubset([])
-    const first = TestApi.routeConfig()[0]
-    expect(first).to.containSubset([ 'get', '/me' ]) 
-    expect(first[2]).to.be.a('function') // can't test functions in arrays in subset
-  })
-
-  it('should return a routeConfig array with custom route_', function(){
-    class TestApi extends KoaApiHandler {
-      static route_getMe = 'you'
-      static getMe(){ return true }
-    }
-    expect(TestApi.routeConfig()).to.containSubset([])
-    const first = TestApi.routeConfig()[0]
-    expect(first).to.containSubset([ 'get', '/you' ]) 
+    expect(TestApiRo.routeConfig()).to.containSubset([])
+    const first = TestApiRo.routeConfig()[0]
+    expect(first).to.containSubset({ method: 'get', path: '/me' }) 
+    expect(first['fn']).to.be.a('function') // can't test functions in arrays in subset
   })
 
   it('should return a routeConfig array with custom path_', function(){
-    class TestApi extends KoaApiHandler {
+    class TestApiRoutes extends KoaApiHandler {
       static path_getMe = 'you'
       static getMe(){ return true }
     }
-    expect(TestApi.routeConfig()).to.containSubset([])
-    const first = TestApi.routeConfig()[0]
-    expect(first).to.containSubset([ 'get', '/you' ]) 
+    expect(TestApiRoutes.routeConfig()).to.containSubset([])
+    const first = TestApiRoutes.routeConfig()[0]
+    expect(first).to.containSubset({ method: 'get', path: '/you' }) 
+  })
+
+  it('should return a routeConfig array with sub router', function(){
+    class TestApiSubRoutes extends KoaApiHandler {
+      static async getMe() { return true }
+      static async postYou() { return true }
+    }
+    class TestApiParentRoutes extends KoaApiHandler {
+      static routes_Me = TestApiSubRoutes
+    }
+    expect(TestApiParentRoutes.routeConfig()).to.containSubset([{
+        path: '/me',
+        routes: v => v.name === 'TestApiSubRoutes', // dodge?
+    }])
   })
 
   it('should throw a nice error when a user messes up a property name', function(){
-    class TestApi extends KoaApiHandler {
+    class TestApiPost extends KoaApiHandler {
       static post_thing = 'you'
     }
-    const fn = ()=> TestApi.routeConfig()
+    const fn = ()=> TestApiPost.routeConfig()
     expect(fn).to.throw('not a function')
   })
 
