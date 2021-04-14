@@ -23,7 +23,7 @@ describe('test::int::app', function(){
 
   it('should create a KoaApi with object config and respond', async function(){
     class TestHandler extends KoaApiHandler {
-      static async getOk(ctx){ return 'ok' }
+      static async getOk(){ return 'ok' }
     }
     new KoaApi({ routes: [TestHandler], app, logger, })
     let res = await request.get('/ok')
@@ -38,7 +38,7 @@ describe('test::int::app', function(){
       static async getOkWoo(){ return 'okWoo' }
     }
     class TestHandler extends KoaApiHandler {
-      static async getOk(ctx){ return 'ok' }
+      static async getOk(){ return 'ok' }
       static routes_Sub = [SubHandler]
     }
     new KoaApi({ routes: [TestHandler], app, logger, })
