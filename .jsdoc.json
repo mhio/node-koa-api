@@ -1,7 +1,7 @@
 {
-  "plugins": [
-    "plugins/markdown"
-  ],
+  "tags": {
+    "allowUnknownTags": true
+  },
   "markdown": {
     "idInHeadings": true
   },
@@ -9,5 +9,9 @@
     "default": {
       "includeDate": false
     }
-  }
+  },
+  "plugins": [
+    "./node_modules/jsdoc-export-default-interop/dist/index",
+    "plugins/markdown"
+  ]
 }
