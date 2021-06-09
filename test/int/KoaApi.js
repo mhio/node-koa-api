@@ -139,7 +139,6 @@ describe('test::int::KoaApi', function(){
     ]
     const use = (ctx) => {
       if (ctx.request.path === '/ok') ctx.body = 'intercepted'
-      console.log(ctx.request)
     }
     new KoaApi({ routes, app, logger, use })
     let res = await request.get('/ok')
