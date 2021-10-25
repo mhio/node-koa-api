@@ -109,7 +109,7 @@ class KoaApi {
   static setupRoute(router, route_config = {}) {
     if (!router) throw new KoaApiException('Setup route requires a @koa/router')
     debug('setupRoute got route config', route_config)
-    const { method, path, routes, fn, handler_object, handler_function } = this.parseRouteConfig(route_config)
+    const { method, path, routes, fn, handler_object, handler_function, validations, raw } = this.parseRouteConfig(route_config)
     if (!path) throw new KoaApiException('Setup route requires route path')
     if (routes) {
       const sub_router = this.setupRoutes(routes)
@@ -134,11 +134,38 @@ class KoaApi {
       const name = (handler_object.name) ? handler_object.name : 'object'
       throw new KoaApiException(`Setup route handler \`${name}[${handler_function}]\` should be a function`)
     }
-    const handleFn = (fn)
-      ? KoaApiHandle.response(fn)
-      : KoaApiHandle.response(handler_object[handler_function].bind(handler_object))
-    router[method](path, handleFn)
+    let handleFn
+    if (raw) {
+      handleFn = (fn)
+        ? fn
+        : handler_object[handler_function].bind(handler_object)
+      debug('raw', method, path)
+      // generate validation function
+    }
+    else {
+      handleFn = (fn)
+        ? KoaApiHandle.response(fn)
+        : KoaApiHandle.response(handler_object[handler_function].bind(handler_object))
+      debug('kah', method, path)
+    } 
+    if (validations &amp;&amp; validations.length > 0) {
+      router[method](path, ...validations, handleFn)
+    } 
+    else {
+      router[method](path, handleFn)
+    }
     return router
+  }
+
+
+  // 
+  static genValidationMiddleware(validations_arr) {
+    if (!validations_arr) return null
+    return async function(ctx){
+      for (const validation_fn of validations_arr) {
+        validation_fn(ctx)
+      }
+    }
   }
 
   // Things like RAML of OpenAPI would go in here. 
@@ -148,15 +175,9 @@ class KoaApi {
     if (Array.isArray(route_config)){
       const method = route_config[0]
       const path = route_config[1]
-      const handler = route_config[2]
-      const handler_2nd = route_config[3]
-      if (handler_2nd) return {
-          method,
-          path,
-          handler_object: handler,
-          handler_function: handler_2nd
-        }
-      return { method, path, fn: handler}
+      const fn = route_config[2]
+      const raw = route_config[3]
+      return { method, path, fn, raw }
     }
     return route_config
   }
