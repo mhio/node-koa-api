@@ -3,6 +3,7 @@ const Koa = require('koa')
 
 
 const { KoaApi } = require('../../src/KoaApi')
+const { KoaApiHandler } = require('../../src/KoaApiHandler')
 const { Taxios } = require('@mhio/taxios')
 
 const ok_routes = [
@@ -89,7 +90,7 @@ describe('test::int::KoaApi', function(){
     expect( res.data ).to.equal('raw')
   })
 
-  it('should generate a koa body validation response', async function(){
+  it('should generate a koa body response from config with validation function', async function(){
     const ok = async () => 'ok'
     let routes = [
       { path: '/ok', method: 'get', fn: ok, validation: [ (ctx, next) => next ], }
@@ -100,12 +101,49 @@ describe('test::int::KoaApi', function(){
     expect( res.data ).to.have.property('data').and.equal('ok')
   })
 
+  it('should generate a koa body  response from a Kah class with validation config', async function(){
+    class TestRoutest extends KoaApiHandler {
+      static body_postOk = {
+        one: (v) => v === 'two',
+      }
+      static async postOk(){
+        return { ok: true }
+      }
+    }
+    new KoaApi({ routes: [ TestRoutest ], app, logger })
+    let res = await request.post('/ok', { one: 'two' })
+    expect( res.status ).to.equal(200)
+    expect( res.data ).to.have.property('data').and.eql({ ok: true })
+  })
+
+  it('should generate a koa body validation error from a Kah class', async function(){
+    class TestRoutest extends KoaApiHandler {
+      static body_postOk = {
+        one: (v) => v === 'two',
+      }
+      static async postOk(){
+        return { ok: true }
+      }
+    }
+    new KoaApi({ errors: { allowed_errors: { 'ValidationError': true } }, routes: [ TestRoutest ], app, logger })
+    let res = await request.sendError('post', '/ok', { one: 'nottwo' })
+    expect( res.status ).to.equal(400)
+    expect( res.data ).to.containSubset({
+      error: {
+        details: {
+          field: 'one',
+          path: 'ok',
+        },
+      },
+    })
+  })
+
   it('should generate a koa body validation error', async function(){
     const handler = {
       ok: function() { return Promise.resolve(this.value) },
       value: 'okeydokey',
     }
-    const errorGen = (ctx, next) => {
+    const errorGen = () => {
       const error = new Error('no')
       error.status = 400
       error.statusCode = 400

@@ -2,12 +2,23 @@ export class DetailsError extends Error {
   constructor(message, details){
     super(message)
     this.details = details
+    this.name = this.constructor.name
   }
 }
 
-export class ValidationError extends DetailsError {}
+export class ValidationError extends DetailsError {
+  constructor(message, details){
+    super(message, details)
+    this.status = 400
+  }
+}
 
 let error_class = ValidationError
+
+const hasOwnProperty = Object.prototype.hasOwnProperty
+function _has(object, key) {
+  return object ? hasOwnProperty.call(object, key) : false
+}
 
 export function setValidationError(value){
   let test_err
@@ -17,7 +28,7 @@ export function setValidationError(value){
   catch (error) {
     throw new Error('New validation error must be contsructed from a message and details object')
   }
-  if (! test_err instanceof Error) {
+  if (!(test_err instanceof Error)) {
     throw new Error('New validation error must be an Error constructor')
   }
   error_class = value
@@ -25,17 +36,17 @@ export function setValidationError(value){
 
 export function generateBodyValidationMiddleware(route_path, fields){
   return async function validateKoaBody(ctx, next) {
-    if (!ctx.body) {
-      throw new error_class('No body in request', { path: route_path })
+    if (!ctx.request.body) {
+      throw new error_class('No body in request', { path: route_path, request: ctx.request })
     }
     for (const [ field, validation ] of fields) {
-      if (!Object.hasOwn(ctx.body, field)) {
-        throw new error_class(`No ${field} in request`, { field, path: route_path })
+      if (!_has(ctx.request.body, field)) {
+        throw new error_class(`No field "${field}" in body of request`, { field, path: route_path, request: ctx.request })
       }
-      if (!validation(ctx.body[field])) {
+      if (!validation(ctx.request.body[field])) {
         throw new error_class(`Field ${field} is not valid`, {
           field,
-          value: ctx.params[field],
+          value: ctx.request.body[field],
           path: route_path
         })
       }
@@ -46,17 +57,17 @@ export function generateBodyValidationMiddleware(route_path, fields){
 
 export function generateRouteParamsValidationMiddleware(route_path, params){
   return async function validateKoaRouteParams(ctx, next) {
-    if (!ctx.params) {
+    if (!ctx.request.params) {
       throw new error_class('No URL parameters in request', { path: route_path })
     }
     for (const [ param_name, validation ] of params) {
-      if (!Object.hasOwn(ctx.params, param_name)) {
+      if (!_has(ctx.request.params, param_name)) {
         throw new error_class(`No parameter ${param_name} in url`, { field: param_name, path: route_path })
       }
-      if (!validation(ctx.params[param_name])) {
+      if (!validation(ctx.request.params[param_name])) {
         throw new error_class(`URL parameter "${param_name}" is not valid`, {
           field: param_name,
-          value: ctx.params[param_name],
+          value: ctx.request.params[param_name],
           path: route_path
         })
       }
@@ -67,17 +78,17 @@ export function generateRouteParamsValidationMiddleware(route_path, params){
 
 export function generateQueryStringValidationMiddleware(route_path, query_strings){
   return async function validateKoaQueryStrings(ctx, next) {
-    if (!ctx.query) {
+    if (!ctx.request.query) {
       throw new error_class('No query string in request', { path: route_path })
     }
     for (const [ query_param, validation ] of query_strings) {
-      if (!Object.hasOwn(ctx.query, query_param)) {
+      if (!_has(ctx.request.query, query_param)) {
         throw new error_class(`No query string param "${query_param}" in url`, { field: query_param, path: route_path })
       }
-      if (!validation(ctx.params[query_param])) {
+      if (!validation(ctx.request.query[query_param])) {
         throw new error_class(`URL query string param "${query_param}" is not valid`, {
           field: query_param,
-          value: ctx.params[query_param],
+          value: ctx.request.query[query_param],
           path: route_path
         })
       } 

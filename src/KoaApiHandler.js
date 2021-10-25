@@ -57,72 +57,20 @@ export class KoaApiHandler {
     const validations = []
 
     if (this[`body_${function_name}`]) {
-      const error_class = ValidationError
       const fields = Object.freeze(Object.entries(this[`body_${function_name}`]))
-      const validateKoaBody = async function validateKoaBody(ctx, next) {
-        if (!ctx.body) {
-          const error = new error_class('No body in request')
-          error.path = route_path
-          throw error
-        }
-        for (const [ field, validation ] of fields) {
-          if (!Object.hasOwn(ctx.body, field)) {
-            throw new error_class(`No ${field} in request`, { field, path: route_path })
-          }
-          if (!validation(ctx.body[field])) {
-            throw new error_class(`Field ${field} is not valid`, {
-              field,
-              value: ctx.params[field],
-              path: route_path
-            })
-          }
-        }
-        await next()
-      }
+      const validateKoaBody = generateBodyValidationMiddleware(route_path, fields)
       validations.push(validateKoaBody) 
     }
 
     if (this[`params_${function_name}`]) {
-      const error_class = ValidationError
       const params = Object.freeze(Object.entries(this[`params_${function_name}`]))
-      const validateKoaParams = async function validateKoaParams(ctx, next) {
-        if (!ctx.params) throw new error_class('No params')
-        for (const [ param_name, validation ] of params) {
-          if (!Object.hasOwn(ctx.params, param_name)) {
-            throw new error_class(`No ${param_name} in url`, { field: param_name, path: route_path })
-          }
-          if (!validation(ctx.params[param_name])) {
-            throw new error_class(`URL param "${param_name}" is not valid`, {
-              field: param_name,
-              value: ctx.params[param_name],
-              path: route_path
-            })
-          }
-        }
-        await next()
-      }
+      const validateKoaParams = generateRouteParamsValidationMiddleware(route_path, params)
       validations.push(validateKoaParams) 
     }
 
     if (this[`query_${function_name}`]) {
-      const error_class = ValidationError
       const query_strings = Object.freeze(Object.entries(this[`query_${function_name}`]))
-      const validateKoaQuery = async function validateKoaQuery(ctx, next) {
-        if (!ctx.query) throw new error_class('No query string')
-        for (const [ query_param, validation ] of query_strings) {
-          if (!Object.hasOwn(ctx.query, query_param)) {
-            throw new error_class(`No query string param "${query_param}" in url`, { field: query_param, path: route_path })
-          }
-          if (!validation(ctx.params[query_param])) {
-            throw new error_class(`URL query string param "${query_param}" is not valid`, {
-              field: query_param,
-              value: ctx.params[query_param],
-              path: route_path
-            })
-          } 
-        } 
-        await next()
-      }
+      const validateKoaQuery = generateQueryStringValidationMiddleware(route_path, query_strings)
       validations.push(validateKoaQuery)
     }
 
