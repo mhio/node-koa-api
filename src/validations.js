@@ -13,25 +13,24 @@ export class ValidationError extends DetailsError {
   }
 }
 
-let error_class = ValidationError
+const error_class = ValidationError
+// export function setValidationError(value){
+//   let test_err
+//   try {
+//     test_err = new value('message', { something: true })
+//   }
+//   catch (error) {
+//     throw new Error('New validation error must be contsructed from a message and details object')
+//   }
+//   if (!(test_err instanceof Error)) {
+//     throw new Error('New validation error must be an Error constructor')
+//   }
+//   error_class = value
+// }
 
 const hasOwnProperty = Object.prototype.hasOwnProperty
 function _has(object, key) {
   return object ? hasOwnProperty.call(object, key) : false
-}
-
-export function setValidationError(value){
-  let test_err
-  try {
-    test_err = new value('message', { something: true })
-  }
-  catch (error) {
-    throw new Error('New validation error must be contsructed from a message and details object')
-  }
-  if (!(test_err instanceof Error)) {
-    throw new Error('New validation error must be an Error constructor')
-  }
-  error_class = value
 }
 
 export function generateBodyValidationMiddleware(route_path, fields){
