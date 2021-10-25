@@ -1,4 +1,4 @@
-export class DetailsError extends Error {
+class DetailsError extends Error {
   constructor(message, details){
     super(message)
     this.details = details
@@ -6,7 +6,7 @@ export class DetailsError extends Error {
   }
 }
 
-export class ValidationError extends DetailsError {
+class ValidationError extends DetailsError {
   constructor(message, details){
     super(message, details)
     this.status = 400
@@ -33,7 +33,7 @@ function _has(object, key) {
   return object ? hasOwnProperty.call(object, key) : false
 }
 
-export function generateBodyValidationMiddleware(route_path, fields){
+function generateBodyValidationMiddleware(route_path, fields){
   return async function validateKoaBody(ctx, next) {
     if (!ctx.request.body) {
       throw new error_class('No body in request', { path: route_path, request: ctx.request })
@@ -54,7 +54,7 @@ export function generateBodyValidationMiddleware(route_path, fields){
   }
 }
 
-export function generateRouteParamsValidationMiddleware(route_path, params){
+function generateRouteParamsValidationMiddleware(route_path, params){
   return async function validateKoaRouteParams(ctx, next) {
     if (!ctx.request.params) {
       throw new error_class('No URL parameters in request', { path: route_path })
@@ -75,7 +75,7 @@ export function generateRouteParamsValidationMiddleware(route_path, params){
   }
 }
 
-export function generateQueryStringValidationMiddleware(route_path, query_strings){
+function generateQueryStringValidationMiddleware(route_path, query_strings){
   return async function validateKoaQueryStrings(ctx, next) {
     if (!ctx.request.query) {
       throw new error_class('No query string in request', { path: route_path })
@@ -94,4 +94,13 @@ export function generateQueryStringValidationMiddleware(route_path, query_string
     } 
     await next()
   }
+}
+
+module.exports = {
+  _has,
+  generateQueryStringValidationMiddleware,
+  generateRouteParamsValidationMiddleware,
+  generateBodyValidationMiddleware,
+  ValidationError,
+  DetailsError,
 }

@@ -1,15 +1,15 @@
-import debugr from 'debug'
-import _snakecase from 'lodash.snakecase'
+const debugr = require('debug')
+const _snakecase = require('lodash.snakecase')
 
-import {
+const {
   generateBodyValidationMiddleware,
   generateRouteParamsValidationMiddleware,
   generateQueryStringValidationMiddleware,
-} from './validations'
+} = require('./validations')
 
 const debug = debugr('mhio:koa-api:KoaApiHandler')
 
-export class KoaApiHandler {
+class KoaApiHandler {
 
   static _initialiseClass(){
     /**
@@ -135,4 +135,7 @@ export class KoaApiHandler {
 }
 KoaApiHandler._initialiseClass()
 
-export default KoaApiHandler
+module.exports = {
+  KoaApiHandler,
+  default: KoaApiHandler,
+}
