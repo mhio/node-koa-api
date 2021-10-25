@@ -77,6 +77,54 @@ describe('test::int::KoaApi', function(){
     expect( res_ok.data ).to.have.property('data').and.equal('ok1')
   })
 
+  it('should allow a koa raw response', async function(){
+    const ok = async (ctx) => { ctx.body = 'raw' }
+    let routes = [
+      { path: '/ok', method: 'get', fn: ok, raw: true, }
+    ]
+    KoaApi.setupApp({ routes_config: routes, app, logger })
+    let res = await request.get('/ok')
+    expect( res.status ).to.equal(200)
+    expect( res.headers['content-type'] ).to.match(/text\/plain/)
+    expect( res.data ).to.equal('raw')
+  })
+
+  it('should generate a koa body validation response', async function(){
+    const ok = async () => 'ok'
+    let routes = [
+      { path: '/ok', method: 'get', fn: ok, validation: [ (ctx, next) => next ], }
+    ]
+    KoaApi.setupApp({ routes_config: routes, app, logger })
+    let res = await request.get('/ok')
+    expect( res.status ).to.equal(200)
+    expect( res.data ).to.have.property('data').and.equal('ok')
+  })
+
+  it('should generate a koa body validation error', async function(){
+    const handler = {
+      ok: function() { return Promise.resolve(this.value) },
+      value: 'okeydokey',
+    }
+    const errorGen = (ctx, next) => {
+      const error = new Error('no')
+      error.status = 400
+      error.statusCode = 400
+      error.name = 'ValidationError'
+      throw error
+    }
+    let routes = [
+      { path: '/ok', method: 'post', handler_object: handler, handler_function: 'ok', validations: [ errorGen ] }
+    ]
+    KoaApi.setupApp({ routes_config: routes, app, logger, })
+    let res = await request.sendError('post', '/ok')
+    expect( res.status ).to.equal(400)
+    expect( res.data ).to.containSubset({
+      error: { 
+        name: 'ValidationError',
+      },
+    })
+  })
+
   it('should create a KoaApi with no config', function(){
     const api = new KoaApi()
     expect( api.app ).to.be.ok

@@ -1,5 +1,6 @@
-/* global expect */
+const { expect } = require('chai')
 const { KoaApi } = require('../../src/KoaApi')
+const sinon = require('sinon')
 
 describe('test::unit::KoaApi', function(){
 
@@ -54,16 +55,66 @@ describe('test::unit::KoaApi', function(){
     const fn = () => KoaApi.setupRoute({}, { path: '/test', method: 'get', handler_object: handler, handler_function: 'nope' })
     expect(fn).to.throw('Setup route handler `object[nope]` should be a function')
   })
+
   it('should setup a single route', function(){
     const router = { 
-      get(path){ this.ok = true, this.path = path }
+      get: sinon.spy()
     }
     const config =  { path: '/ok', method: 'get', fn: ()=> Promise.resolve('ok') }
-    expect(KoaApi.setupRoute(router, config)).to.containSubset({
-      ok: true,
-      path: '/ok' 
-    })
+    KoaApi.setupRoute(router, config)
+    expect(router.get).to.have.been.calledWith('/ok')
+    const call = router.get.getCall(0)
+    expect(call.args[1].name).to.equal('koaApiHandleApiResponse')
   })
+
+  it('should setup a single raw route', function(){
+    const router = { 
+      get: sinon.spy()
+    }
+    const config =  { path: '/ok', method: 'get', fn: ()=> Promise.resolve('ok'), raw: true }
+    const res = KoaApi.setupRoute(router, config)
+    expect(res).to.be.ok
+    expect(router.get).to.have.been.calledWith('/ok', config.fn)
+  })
+
+  it('should setup a single validation param route', function(){
+    const router = { 
+      get: sinon.spy()
+    }
+    const config = { path: '/ok', method: 'get', fn: ()=> Promise.resolve('ok'), validations: [ () => true ] }
+    const res = KoaApi.setupRoute(router, config)
+    expect(res).to.be.ok
+    expect(router.get).to.have.been.calledWith('/ok')
+    const vals = router.get.getCall(0)
+    expect(vals.args[1]).to.be.a('function')
+    expect(vals.args[2].name).to.equal('koaApiHandleApiResponse')
+  })
+
+  it('should setup a single validation body route', function(){
+    const router = { 
+      get: sinon.spy()
+    }
+    const config =  { path: '/ok', method: 'get', fn: ()=> Promise.resolve('ok'), validations: [ () => true ] }
+    KoaApi.setupRoute(router, config)
+    expect(router.get).to.have.been.calledWith('/ok')
+    const vals = router.get.getCall(0)
+    expect(vals.args[1]).to.be.a('function')
+    expect(vals.args[2].name).to.equal('koaApiHandleApiResponse')
+  })
+
+  it('should setup a single validation query route', function(){
+    const router = { 
+      get: sinon.spy()
+    }
+    const config =  { path: '/ok', method: 'get', fn: ()=> Promise.resolve('ok'), validations: [ () => true ] }
+    const res = KoaApi.setupRoute(router, config)
+    expect(res).to.be.ok
+    expect(router.get).to.have.been.calledWith('/ok')
+    const vals = router.get.getCall(0)
+    expect(vals.args[1]).to.be.a('function')
+    expect(vals.args[2].name).to.equal('koaApiHandleApiResponse')
+  })
+
   it('should have a pino dummy', function(){
     const log = KoaApi.pinoLikeConsoleLogger()
     expect(log).to.be.ok
