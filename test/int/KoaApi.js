@@ -163,6 +163,84 @@ describe('test::int::KoaApi', function(){
     })
   })
 
+  it('should generate a koa query  response from a Kah class with validation config', async function(){
+    class TestRoutest extends KoaApiHandler {
+      static query_getOk = {
+        one: (v) => v === 'two',
+      }
+      static async getOk(){
+        return { ok: true }
+      }
+    }
+    new KoaApi({ routes: [ TestRoutest ], app, logger })
+    let res = await request.get('/ok?one=two')
+    expect( res.status ).to.equal(200)
+    expect( res.data ).to.have.property('data').and.eql({ ok: true })
+  })
+
+  it('should generate a koa query validation error from a Kah class', async function(){
+    class TestQueryRoute extends KoaApiHandler {
+      static query_getOk = {
+        str: (v) => v === 'qry',
+      }
+      static async getOk(){
+        return { ok: true }
+      }
+    }
+    new KoaApi({ errors: { allowed_errors: { 'ValidationError': true } }, routes: [ TestQueryRoute ], app, logger })
+    let res = await request.sendError('get', '/ok?str=a')
+    expect( res.status ).to.equal(400)
+    expect( res.data ).to.containSubset({
+      error: {
+        details: {
+          field: 'str',
+          value: 'a',
+          path: 'ok',
+        },
+      },
+    })
+  })
+
+  it('should generate a koa param  response from a Kah class with validation config', async function(){
+    class TestParamTestOk extends KoaApiHandler {
+      static path_getOk = '/ok/:id'
+      static params_getOk = {
+        id: (v) => v === '4',
+      }
+      static async getOk(){
+        return { ok: true }
+      }
+    }
+    new KoaApi({ routes: [ TestParamTestOk ], app, logger })
+    let res = await request.get('/ok/4')
+    expect( res.status ).to.equal(200)
+    expect( res.data ).to.have.property('data').and.eql({ ok: true })
+  })
+
+  it('should generate a koa param validation error from a Kah class', async function(){
+    class TestParamTestFail extends KoaApiHandler {
+      static path_getOk = '/ok/:id'
+      static params_getOk = {
+        id: (v) => v === '4',
+      }
+      static async getOk(){
+        return { ok: true }
+      }
+    }
+    new KoaApi({ errors: { allowed_errors: { 'ValidationError': true } }, routes: [ TestParamTestFail ], app, logger })
+    let res = await request.sendError('get', '/ok/nope')
+    expect( res.status ).to.equal(400)
+    expect( res.data ).to.containSubset({
+      error: {
+        details: {
+          field: 'id',
+          value: 'nope',
+          path: '/ok/:id',
+        },
+      },
+    })
+  })
+
   it('should create a KoaApi with no config', function(){
     const api = new KoaApi()
     expect( api.app ).to.be.ok
